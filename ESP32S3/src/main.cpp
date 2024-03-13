@@ -1,3 +1,66 @@
+//WIFI传输数据
+
+#include <WiFi.h>
+
+const char *ssid = "荣耀Magic4 Pro";
+const char *password = "123321123";
+
+const IPAddress serverIP(192,168,31,133);
+uint16_t serverPort = 8010;
+
+WiFiClient client;
+
+void setup()
+{
+    Serial.begin(115200);
+    Serial.println();
+
+    WiFi.mode(WIFI_STA);
+    WiFi.setSleep(false);
+    WiFi.begin(ssid,password);
+
+    while(WiFi.status() == WL_CONNECT_FAILED)
+    {
+        delay(500);
+        Serial.print(".");
+    }
+
+    Serial.println("Connected");
+    Serial.print("IP Address:");
+    Serial.println(WiFi.localIP());
+}
+
+void loop()
+{
+    Serial.println("try to connect the AP:");
+    if(client.connect(serverIP,serverPort))
+    {
+        Serial.println("OK! Let say hello world");
+        client.printf("This is a try to covery the data from STA");
+        while(client.connected() || client.available())
+        {
+            if(client.available())
+            {
+                String line = client.readStringUntil('\n');
+                Serial.print("I get it!");
+                Serial.println(line); //测试能否将数据回传到ESP，并且利用ESP进行处理
+            }
+        }
+        Serial.println("Bye bye!");
+        client.stop(); //客户端关闭
+    }
+    else
+    {
+        Serial.println("There seemed to be a problem!");
+        client.stop(); //客户端关闭
+    }
+    delay(5000);
+}
+
+
+
+
+/*
 //加速度，欧拉角以及速度计算
 
 #include "I2Cdev.h"
@@ -236,7 +299,7 @@ void loop()
     }
 }
 
-
+*/
 
 
 //姿态数据
