@@ -1,7 +1,7 @@
 import serial
 
 
-com = serial.Serial('COM11',115200)
+com = serial.Serial('COM13',115200)
 
 while(1):
     bit = com.read(1)
