@@ -427,3 +427,8 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   include("F:/Dian/IDF/build/esp-idf/led/cmake_install.cmake")
 endif()
 
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
+  include("F:/Dian/IDF/build/esp-idf/myusart/cmake_install.cmake")
+endif()
+

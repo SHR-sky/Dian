@@ -653,3 +653,10 @@ F:/Dian/IDF/build/esp-idf/led/CMakeFiles/list_install_components.dir
 F:/Dian/IDF/build/esp-idf/led/CMakeFiles/install.dir
 F:/Dian/IDF/build/esp-idf/led/CMakeFiles/install/local.dir
 F:/Dian/IDF/build/esp-idf/led/CMakeFiles/install/strip.dir
+F:/Dian/IDF/build/esp-idf/myusart/CMakeFiles/__idf_myusart.dir
+F:/Dian/IDF/build/esp-idf/myusart/CMakeFiles/edit_cache.dir
+F:/Dian/IDF/build/esp-idf/myusart/CMakeFiles/rebuild_cache.dir
+F:/Dian/IDF/build/esp-idf/myusart/CMakeFiles/list_install_components.dir
+F:/Dian/IDF/build/esp-idf/myusart/CMakeFiles/install.dir
+F:/Dian/IDF/build/esp-idf/myusart/CMakeFiles/install/local.dir
+F:/Dian/IDF/build/esp-idf/myusart/CMakeFiles/install/strip.dir

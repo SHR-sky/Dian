@@ -21,7 +21,7 @@ with open('accelerometer_data.csv', mode='w', newline='') as file:
                 accel_x = float(data[1])
                 accel_y = float(data[2])
                 accel_z = float(data[3])
-                
+
                 # 写入 CSV 文件
                 writer.writerow([timestamp, accel_x, accel_y, accel_z])
                 

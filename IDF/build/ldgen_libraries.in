@@ -65,3 +65,4 @@ $<TARGET_FILE:__idf_usb>
 $<TARGET_FILE:__idf_wifi_provisioning>
 $<TARGET_FILE:__idf_main>
 $<TARGET_FILE:__idf_led>
+$<TARGET_FILE:__idf_myusart>
