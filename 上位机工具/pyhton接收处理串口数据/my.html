@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+</head>
+<body>
+	<h2>ESP32 网页</h2>
+	<!-- 创建一个ID为dht的盒子用于显示获取到的数据 -->
+	<div id="dht">
+	</div>
+	<button onclick="set()"> 发送数据 </button>
+
+    <div id="lineChart" style="width: 800px; height: 400px;"></div>
+    <!-- 创建一个ID为dht的盒子用于显示获取到的数据 --><script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.4.0/echarts.min.js"></script>
+    {{line | safe}}
+
+<iframe src="F:\Dian\上位机工具\realtime_acceleration.html" width="1000" height="600" frameborder="0">
+  <p>您的浏览器不支持iframe元素。</p>
+</iframe>
+
+
+</body>
+<script>
+	// 按下按钮会运行这个JS函数
+	function set() {
+		var payload = "ESP32"; // 需要发送的内容，ESP32接受指令后可进行某些操作
+		// 通过get请求给 /set
+		var xhr = new XMLHttpRequest();
+		xhr.open("GET", "/set?value=" + payload, true);
+		xhr.send();
+	}
+	// 设置一个定时任务, 1000ms执行一次
+	setInterval(function () {
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function () {
+			if (this.readyState == 4 && this.status == 200) {
+				// 此代码会搜索ID为dht的组件，然后使用返回内容替换组件内容
+				document.getElementById("dht").innerHTML = this.responseText;
+			}
+		};
+		// 使用GET的方式请求 /dht
+		xhttp.open("GET", "/dht", true);
+		xhttp.send();
+	}, 1000)
+</script>

@@ -40,6 +40,12 @@ const char index_html[] PROGMEM = R"rawliteral(
 	<div id="dht">
 	</div>
 	<button onclick="set()"> 发送数据 </button>
+
+<iframe src="http://127.0.0.1:5500/realtime_acceleration.html" width="1000" height="600" frameborder="0">
+  <p>您的浏览器不支持iframe元素。</p>
+</iframe>
+
+
 </body>
 <script>
 	// 按下按钮会运行这个JS函数
