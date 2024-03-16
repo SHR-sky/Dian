@@ -15512,6 +15512,7 @@ LOAD esp-idf/usb/libusb.a
 LOAD esp-idf/wifi_provisioning/libwifi_provisioning.a
 LOAD esp-idf/main/libmain.a
 LOAD esp-idf/led/libled.a
+LOAD esp-idf/myiic/libmyiic.a
 LOAD esp-idf/myusart/libmyusart.a
 LOAD esp-idf/app_trace/libapp_trace.a
 LOAD esp-idf/app_trace/libapp_trace.a

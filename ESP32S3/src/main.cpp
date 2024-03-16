@@ -1,3 +1,209 @@
+/*
+#include <Arduino.h>
+#include "TFT_eSPI.h"
+
+TFT_eSPI tft;
+
+void setup()
+{
+    tft.init();
+    tft.setRotation(1);
+    tft.fillScreen(TFT_BLACK);
+    tft.setTextSize(1);
+    tft.setTextColor(TFT_WHITE);
+    tft.setCursor(10,10);
+    tft.println("TEST");
+}
+
+
+void loop()
+{
+
+
+}
+*/
+
+
+
+/*
+//官方触控测试例程
+#include <Arduino.h>
+#include <SPI.h>
+#include <TFT_eSPI.h>      // Hardware-specific library
+
+TFT_eSPI tft = TFT_eSPI(); // Invoke custom library
+
+
+
+
+
+
+//------------------------------------------------------------------------------------------
+
+// Code to run a screen calibration, not needed when calibration values set in setup()
+void touch_calibrate()
+{
+  uint16_t calData[5];
+  uint8_t calDataOK = 0;
+
+  // Calibrate
+  tft.fillScreen(TFT_BLACK);
+  tft.setCursor(20, 0);
+  tft.setTextFont(2);
+  tft.setTextSize(1);
+  tft.setTextColor(TFT_WHITE, TFT_BLACK);
+
+  tft.println("Touch corners as indicated");
+
+  tft.setTextFont(1);
+  tft.println();
+
+  tft.calibrateTouch(calData, TFT_MAGENTA, TFT_BLACK, 15);
+
+  Serial.println(); Serial.println();
+  Serial.println("// Use this calibration code in setup():");
+  Serial.print("  uint16_t calData[5] = ");
+  Serial.print("{ ");
+
+  for (uint8_t i = 0; i < 5; i++)
+  {
+    Serial.print(calData[i]);
+    if (i < 4) Serial.print(", ");
+  }
+
+  Serial.println(" };");
+  Serial.print("  tft.setTouch(calData);");
+  Serial.println(); Serial.println();
+
+  tft.fillScreen(TFT_BLACK);
+  
+  tft.setTextColor(TFT_GREEN, TFT_BLACK);
+  tft.println("Calibration complete!");
+  tft.println("Calibration code sent to Serial port.");
+
+  delay(4000);
+}
+
+
+
+
+
+
+
+
+
+
+
+//------------------------------------------------------------------------------------------
+
+void setup() {
+  // Use serial port
+  Serial.begin(115200);
+
+  // Initialise the TFT screen
+  tft.init();
+
+  // Set the rotation to the orientation you wish to use in your project before calibration
+  // (the touch coordinates returned then correspond to that rotation only)
+  tft.setRotation(1);
+
+  // Calibrate the touch screen and retrieve the scaling factors
+  touch_calibrate();
+
+
+
+  // Clear the screen
+  tft.fillScreen(TFT_BLACK);
+  tft.drawCentreString("Touch screen to test!",tft.width()/2, tft.height()/2, 2);
+}
+
+//------------------------------------------------------------------------------------------
+
+void loop(void) {
+  uint16_t x = 0, y = 0; // To store the touch coordinates
+
+  // Pressed will be set true is there is a valid touch on the screen
+  bool pressed = tft.getTouch(&x, &y);
+
+  // Draw a white spot at the detected coordinates
+  if (pressed) {
+    tft.fillCircle(x, y, 2, TFT_WHITE);
+    //Serial.print("x,y = ");
+    //Serial.print(x);
+    //Serial.print(",");
+    //Serial.println(y);
+  }
+
+}
+*/
+
+
+
+
+
+
+/*
+// 官方屏幕驱动测试
+#include <lvgl.h>
+#include <TFT_eSPI.h>
+#include "demos/lv_demos.h"
+
+
+static const uint16_t screenWidth  = 240;//屏幕分辨率
+static const uint16_t screenHeight = 320;
+
+static lv_disp_draw_buf_t draw_buf;
+static lv_color_t buf[ screenWidth * screenHeight ];
+
+TFT_eSPI tft = TFT_eSPI(screenWidth, screenHeight);
+
+void my_disp_flush( lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *color_p )
+{
+    uint32_t w = ( area->x2 - area->x1 + 1 );
+    uint32_t h = ( area->y2 - area->y1 + 1 );
+
+    tft.startWrite();
+    tft.setAddrWindow( area->x1, area->y1, w, h );
+    tft.pushColors( ( uint16_t * )&color_p->full, w * h, true );
+    tft.endWrite();
+
+    lv_disp_flush_ready( disp_drv );
+}
+
+void setup()
+{
+    Serial.begin( 115200 ); 
+    Serial.println( "I am LVGL_Arduino" );
+
+    lv_init();
+    tft.begin();          
+    tft.setRotation( 3 ); 
+
+    lv_disp_draw_buf_init( &draw_buf, buf, NULL, screenWidth * screenHeight );
+
+    static lv_disp_drv_t disp_drv;
+    lv_disp_drv_init( &disp_drv );
+
+    disp_drv.hor_res = screenHeight;
+    disp_drv.ver_res = screenWidth;
+    disp_drv.flush_cb = my_disp_flush;
+    disp_drv.draw_buf = &draw_buf;
+    lv_disp_drv_register( &disp_drv );
+
+    lv_demo_benchmark();          // OK
+
+    Serial.println( "Setup done" );
+}
+
+void loop()
+{
+    lv_timer_handler(); 
+    delay( 5 );
+}
+*/
+
+/*
+
 //ESP32数据网页
 
 #include <ESPAsyncWebServer.h>    // 包含异步Web服务器库文件
@@ -170,7 +376,7 @@ void loop()
 
 }
 
-
+*/
 
 
 /*
@@ -479,13 +685,20 @@ void loop()
 */
 
 
+
+
+
+
 //姿态数据
 
-/*
+
 #include <Arduino.h>
 #include "I2Cdev.h"
 #include "MPU6050.h"
- 
+#include "TFT_eSPI.h"
+
+TFT_eSPI tft;
+
 
 #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
     #include "Wire.h"
@@ -509,6 +722,14 @@ bool blinkState = false;
 
 
 void setup() {
+
+
+    tft.init();
+    tft.setRotation(1);
+    tft.fillScreen(TFT_BLACK);
+    tft.setTextSize(3);
+    tft.setTextColor(TFT_WHITE);
+
 
     //初始化I2C，采用软件I2C
     #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
@@ -536,13 +757,32 @@ void loop() {
 
     #ifdef OUTPUT_READABLE_ACCELGYRO
 
-        Serial.print("a/g:\t");
-        Serial.print(ax); Serial.print("\t");
-        Serial.print(ay); Serial.print("\t");
-        Serial.print(az); Serial.print("\t");
-        Serial.print(gx); Serial.print("\t");
-        Serial.print(gy); Serial.print("\t");
-        Serial.println(gz);
+
+
+        tft.setCursor(0,10);
+        tft.printf("ax");
+        tft.println(ax);
+        tft.printf("ay");
+        tft.println(ay);
+        tft.printf("az");
+        tft.println(az);
+        tft.printf("gx");
+        tft.println(gx);
+        tft.printf("gy");
+        tft.println(gy);
+        tft.printf("gz");
+        tft.println(gz);
+        delay(1000);
+        tft.fillScreen(TFT_BLACK);
+
+
+        // Serial.print("a/g:\t");
+        // Serial.print(ax); Serial.print("\t");
+        // Serial.print(ay); Serial.print("\t");
+        // Serial.print(az); Serial.print("\t");
+        // Serial.print(gx); Serial.print("\t");
+        // Serial.print(gy); Serial.print("\t");
+        // Serial.println(gz);
     #endif
 
     //灯闪烁，说明数据正常传输
@@ -550,7 +790,7 @@ void loop() {
     digitalWrite(LED_PIN, blinkState);
     delay(100);
 }
-*/
+
 
 /*
 #include <Arduino.h>
@@ -574,4 +814,24 @@ void loop() {
 
 }
 
+*/
+
+/*
+#include <Arduino.h>
+
+
+#define LED 2
+String rev="hello_world";
+
+void setup() {
+  pinMode(13,OUTPUT);
+  
+}
+
+void loop() {
+
+    digitalWrite(13,HIGH);
+    delay(1000);
+    digitalWrite(13,LOW);
+}
 */

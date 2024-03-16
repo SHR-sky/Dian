@@ -4,4 +4,5 @@ idf_component_register(SRCS "main.c"
 set(COMPONENT_REQUIRES
     led
     myusart
+    myiic
     )

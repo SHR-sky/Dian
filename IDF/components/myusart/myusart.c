@@ -11,12 +11,12 @@ void myusart_init(void)
         .parity = UART_PARITY_DISABLE,
         .stop_bits = UART_STOP_BITS_1,
         .flow_ctrl = UART_HW_FLOWCTRL_DISABLE,
-        .source_clk = UART_SCLK_APB,
+        .source_clk = UART_SCLK_APB,            //APB时钟
     };
 
-    uart_driver_install(uart_num, BUF_SIZE*2, 0, 0, NULL, 0);
     uart_param_config(uart_num, &uart_config);
     uart_set_pin(uart_num, TXD_PIN, RXD_PIN, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
+    uart_driver_install(uart_num, BUF_SIZE*2, 0, 0, NULL, 0);   //主机不接收故为0
 }
 
 
