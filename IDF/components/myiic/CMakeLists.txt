@@ -1,3 +1,3 @@
 idf_component_register(SRCS "myiic.c"
-                    REQUIRES driver
+                    REQUIRES driver freertos
                     INCLUDE_DIRS "include")
