@@ -1,4 +1,4 @@
-/*
+
 #include <lvgl.h>
 #include <TFT_eSPI.h>
 #include "ui.h"
@@ -188,7 +188,7 @@ void loop()
     delay(100);
 }
 
-*/
+
 
 /*
 #include <Arduino.h>
@@ -641,7 +641,7 @@ void loop()
 */
 
 
-
+/*
 
 //加速度，欧拉角以及速度计算
 
@@ -886,7 +886,7 @@ void loop()
 
 
 
-
+*/
 
 
 /*
