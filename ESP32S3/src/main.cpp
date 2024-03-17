@@ -4,6 +4,7 @@
 
 #include <lvgl.h>
 #include <TFT_eSPI.h>
+#include "ui.h"
 
 /*To use the built-in examples and demos of LVGL uncomment the includes below respectively.
  *You also need to copy `lvgl/examples` to `lvgl/src/examples`. Similarly for the demos `lvgl/demos` to `lvgl/src/demos`.
@@ -118,18 +119,10 @@ void setup()
     lv_label_set_text( label, "Hello Ardino and LVGL!");
     lv_obj_align( label, LV_ALIGN_CENTER, 0, 0 );
  
-    /* Try an example. See all the examples 
-     * online: https://docs.lvgl.io/master/examples.html
-     * source codes: https://github.com/lvgl/lvgl/tree/e7f88efa5853128bf871dde335c0ca8da9eb7731/examples */
-     //lv_example_btn_1();
-   
-     /*Or try out a demo. Don't forget to enable the demos in lv_conf.h. E.g. LV_USE_DEMOS_WIDGETS*/
-    //lv_demo_widgets();               
-    // lv_demo_benchmark();          
-    // lv_demo_keypad_encoder();     
-    // lv_demo_music();              
-    // lv_demo_printer();
-    // lv_demo_stress();
+    //此处初始化我的ui
+
+    ui_init();
+    
     
     Serial.println( "Setup done" );
 }
