@@ -3,6 +3,15 @@
 #include "myiic.h"
 
 
+#define Kp 100.0f                // 比例增益支配率收敛到加速度计/磁强计
+#define Ki 0.002f                // 积分增益支配率的陀螺仪偏见的衔接
+#define halfT 0.001f             // 采样周期的一半
+ 
+float q0 = 1, q1 = 0, q2 = 0, q3 = 0;          // 四元数的元素，代表估计方向
+float exInt = 0, eyInt = 0, ezInt = 0;         // 按比例缩小积分误差
+ 
+float Yaw,Pitch,Roll;  //偏航角，俯仰角，翻滚角
+
 
 i2c_config_t myiic_Init(void)
 {
@@ -24,319 +33,88 @@ i2c_config_t myiic_Init(void)
 
 }
 
-uint8_t MPU_Init()
-{
-	uint8_t res = 0;
-	I2C_Init();
-	MPU_Write_Byte(MPU_PWR_MGMT1_REG, 0x80);
-	vTaskDelay(100 / portTICK_RATE_MS);
-	MPU_Write_Byte(MPU_PWR_MGMT1_REG, 0x00);
-	MPU_Set_Gyro_FSR(3);
-	MPU_Set_Accel_FSR(0);
-	MPU_Set_Rate(50);
-	MPU_Write_Byte(MPU_INT_EN_REG,0X00);	//关闭所有中断
-	MPU_Write_Byte(MPU_USER_CTRL_REG,0X00);	//I2C主模式关闭
-	MPU_Write_Byte(MPU_FIFO_EN_REG,0X00);	//关闭FIFO
-	MPU_Write_Byte(MPU_INTBP_CFG_REG,0X80);	//INT引脚低电平有效
-	MPU_Read_Byte(MPU_DEVICE_ID_REG, &res);
-	if(res == MPU_ADDR)
-	{
-		MPU_Write_Byte(MPU_PWR_MGMT1_REG,0X01);	//设置CLKSEL,PLL X轴为参考
-		MPU_Write_Byte(MPU_PWR_MGMT2_REG,0X00);	//加速度与陀螺仪都工作
-		MPU_Set_Rate(50);						//设置采样率为50Hz
-	}else
-		return 1;
-	return 0;
+
+
+void mpu6050_get_data(void) {
+    i2c_config_t esp32 = myiic_Init();
+
+    uint8_t data[14];
+
+    i2c_cmd_handle_t cmd = i2c_cmd_link_create();	//创建一个命令链表
+    i2c_master_start(cmd);
+    i2c_master_write_byte(cmd, (MPU_ADDR << 1) | I2C_MASTER_WRITE, true); //选择通信对象
+    i2c_master_write_byte(cmd, 0x3B, true);	//读取位置
+    i2c_master_start(cmd);
+    i2c_master_write_byte(cmd, (MPU_ADDR << 1) | I2C_MASTER_READ, true);	//读操作
+    i2c_master_read(cmd, data, 14, I2C_MASTER_LAST_NACK);	//读14个byte
+    i2c_master_stop(cmd);
+    i2c_master_cmd_begin(I2C_NUM_0, cmd, 1000 / portTICK_PERIOD_MS);
+    i2c_cmd_link_delete(cmd); //free cmd
+
+    // 解析数据并输出(去掉温度部分)
+    int16_t ax = (data[0] << 8) | data[1];
+    int16_t ay = (data[2] << 8) | data[3];
+    int16_t az = (data[4] << 8) | data[5];
+	int16_t gx = (data[8] << 8) | data[9];
+	int16_t gy = (data[10] << 8) | data[11];
+	int16_t gz = (data[12] << 8) | data[13];
+
+	IMUupdate((float)gx, (float)gy, (float)gz, (float)ax, (float)ay, (float)az);
+
 }
 
-/**
- * @brief Set the Gyroscope full-scale range of ±250, ±500, ±1000, and ±2000°/sec (dps)
- *
- * @param fsr the number of register, it could be 0, 1, 2, 3
- *
- * @return
- *     - 0 is Success
- *     - 1 is Error
- */
-uint8_t MPU_Set_Gyro_FSR(uint8_t fsr)
+
+
+
+
+void IMUupdate(float gx, float gy, float gz, float ax, float ay, float az)
 {
-	return MPU_Write_Byte(MPU_GYRO_CFG_REG, fsr << 3);
-}
+        float norm;
+        float vx, vy, vz;
+        float ex, ey, ez;  
+ 
+        // 测量正常化
+        norm = sqrt(ax*ax + ay*ay + az*az);
 
-/**
- * @brief Set the Accelerometer full-scale range of ±2g, ±4g, ±8g, and ±16g
- *
- * @param fsr the number of register, it could be 0, 1, 2, 3
- *
- * @return
- *     - 0 is Success
- *     - 1 is Error
- */
-uint8_t MPU_Set_Accel_FSR(uint8_t fsr)
-{
-	return MPU_Write_Byte(MPU_ACCEL_CFG_REG, fsr << 3);
-}
-
-/**
- * @brief Set the band of low pass filter
- *
- * @param lps parameter is the band of low pass filter
- *
- * @return
- *     - 0 is Success
- *     - 1 is Error
- */
-uint8_t MPU_Set_LPF(uint16_t lpf)
-{
-	uint8_t data=0;
-	if(lpf>=188)data=1;
-	else if(lpf>=98)data=2;
-	else if(lpf>=42)data=3;
-	else if(lpf>=20)data=4;
-	else if(lpf>=10)data=5;
-	else data=6;
-	return MPU_Write_Byte(MPU_CFG_REG, data);
-}
-
-/**
- * @brief Set the Sample rate of Gyroscope, Accelerometer, DMP, etc.
- *
- * @param rate parameter is the sample rate of Gyroscope, Accelerometer, DMP, etc.
- *
- * @return
- *     - 0 is Success
- *     - 1 is Error
- */
-uint8_t MPU_Set_Rate(uint16_t rate)
-{
-	uint8_t data;
-	if(rate > 1000)
-		rate = 1000;
-	if(rate < 4)
-		rate = 4;
-	data = 1000/rate - 1;
-	data = MPU_Write_Byte(MPU_SAMPLE_RATE_REG, data);
-	return MPU_Set_LPF(rate / 2); /*!< set low pass filter the half of the rate */
-}
-
-/**
- * @brief Get the temperature of the MPU-6050
- *
- * @return
- *     - temp is the temperature of the MPU-6050
- *     - 1 is Error
- */
-int16_t MPU_Get_Temperature()
-{
-	uint8_t buf[2];
-	int16_t raw;
-	float temp;
-	if(MPU_Read_Len(MPU_TEMP_OUTH_REG, buf, 2) == 0)
-		return 1;
-	raw = ((uint16_t)(buf[1] << 8)) | buf[0];
-	temp = 36.53 + ((double)raw/340);
-	return temp*100;
-}
-
-/**
- * @brief Get the Gyroscope data of the MPU-6050
- *
- * @param gx parameter is the x axis data of Gyroscope
- * @param gy parameter is the y axis data of Gyroscope
- * @param gz parameter is the z axis data of Gyroscope
- *
- * @return
- *     - 0 is Success
- *     - 1 is Error
- */
-uint8_t MPU_Get_Gyroscope(int16_t *gx, int16_t *gy, int16_t *gz)
-{
-	uint8_t buf[6], res;
-	res = MPU_Read_Len(MPU_GYRO_XOUTH_REG, buf, 6);
-	if(res == 0)
-	{
-		*gx=((uint16_t)buf[0]<<8)|buf[1];
-		*gy=((uint16_t)buf[2]<<8)|buf[3];
-		*gz=((uint16_t)buf[4]<<8)|buf[5];
-	}
-	return res;
-}
-
-/**
- * @brief Get the Accelerometer data of the MPU-6050
- *
- * @param ax parameter is the x axis data of Accelerometer
- * @param ay parameter is the y axis data of Accelerometer
- * @param az parameter is the z axis data of Accelerometer
- *
- * @return
- *     - 0 is Success
- *     - 1 is Error
- */
-uint8_t MPU_Get_Accelerometer(int16_t *ax, int16_t *ay, int16_t *az)
-{
-	uint8_t buf[6], res;
-	res = MPU_Read_Len(MPU_ACCEL_XOUTH_REG, buf, 6);
-	if(res == 0)
-	{
-		*ax=((uint16_t)buf[0]<<8)|buf[1];
-		*ay=((uint16_t)buf[2]<<8)|buf[3];
-		*az=((uint16_t)buf[4]<<8)|buf[5];
-	}
-	return res;
-}
-
-/**
- * @brief Write a byte to MPU-6050 through I2C
- *
- * @param reg parameter is a register of MPU-6050
- * @param data parameter will be written to the register of MPU-6050
- *
- * @return
- *     - 0 is Success
- *     - 1 is Error
- */
-uint8_t MPU_Write_Byte(uint8_t reg, uint8_t data)
-{
-	esp_err_t error;
-	i2c_cmd_handle_t cmd = i2c_cmd_link_create();
-	i2c_master_start(cmd);
-	error = i2c_master_write_byte(cmd, (MPU_ADDR << 1) | I2C_MASTER_WRITE, 1);
-	if(error != ESP_OK)
-		return 1;
-
-	error = i2c_master_write_byte(cmd, reg, 1);
-	if(error != ESP_OK)
-		return 1;
-
-	error = i2c_master_write_byte(cmd, data, 1);
-	if(error != ESP_OK)
-		return 1;
-
-	i2c_master_stop(cmd);
-
-	i2c_master_cmd_begin(I2C_NUM_0, cmd, 10/portTICK_PERIOD_MS);
-
-	i2c_cmd_link_delete(cmd);
-
-	return 0;
-}
-
-/**
- * @brief Write a buffer to MPU-6050 through I2C
- *
- * @param reg parameter is a register of MPU-6050
- * @param data parameter is a buffer which will be written to a register of MPU-6050
- * @param len parameter is the length of data
- *
- * @return
- *     - 0 is Success
- *     - 1 is Error
- */
-uint8_t MPU_Write_Len(uint8_t reg, uint8_t *data, uint8_t len)
-{
-	esp_err_t error;
-	i2c_cmd_handle_t cmd = i2c_cmd_link_create();
-	i2c_master_start(cmd);
-	error = i2c_master_write_byte(cmd, (MPU_ADDR << 1) | I2C_MASTER_WRITE, 1);
-	if(error != ESP_OK)
-		return 1;
-
-	error = i2c_master_write_byte(cmd, reg, 1);
-	if(error != ESP_OK)
-		return 1;
-
-	error = i2c_master_write(cmd, data, len, 1);
-	if(error != ESP_OK)
-		return 1;
-
-	i2c_master_stop(cmd);
-
-	i2c_master_cmd_begin(I2C_NUM_0, cmd, 10/portTICK_PERIOD_MS);
-
-	i2c_cmd_link_delete(cmd);
-
-	return 0;
-}
-
-/**
- * @brief Read a byte from MPU-6050 through I2C
- *
- * @param reg parameter is a register of MPU-6050
- * @param res the data read will be stored in this parameter
- *
- * @return
- *     - 0 is Success
- *     - 1 is Error
- */
-uint8_t MPU_Read_Byte(uint8_t reg, uint8_t *res)
-{
-
-	esp_err_t error;
-	i2c_cmd_handle_t cmd = i2c_cmd_link_create();
-	i2c_master_start(cmd);
-	error = i2c_master_write_byte(cmd, (MPU_ADDR << 1) | I2C_MASTER_WRITE, 1);
-	if(error != ESP_OK)
-		return 1;
-
-	error = i2c_master_write_byte(cmd, reg, 1);
-	if(error != ESP_OK)
-		return 1;
-
-	i2c_master_start(cmd);
-	error = i2c_master_write_byte(cmd, (MPU_ADDR << 1) | I2C_MASTER_READ, 1);
-	if(error != ESP_OK)
-		return 1;
-
-	error = i2c_master_read_byte(cmd, res, I2C_MASTER_LAST_NACK);
-	if(error != ESP_OK)
-		return 1;
-
-	i2c_master_stop(cmd);
-
-	i2c_master_cmd_begin(I2C_NUM_0, cmd, 10/portTICK_PERIOD_MS);
-
-	i2c_cmd_link_delete(cmd);
-	return 0;
-}
-
-/**
- * @brief Read a buffer from MPU-6050 through I2C
- *
- * @param reg parameter is a register of MPU-6050
- * @param buf parameter is a buf witch will store the data
- * @param len parameter is the length of buf
- *
- * @return
- *     - 0 is Success
- *     - 1 is Error
- */
-uint8_t MPU_Read_Len(uint8_t reg, uint8_t *buf, uint8_t len)
-{
-	esp_err_t error;
-	i2c_cmd_handle_t cmd = i2c_cmd_link_create();
-	i2c_master_start(cmd);
-	error = i2c_master_write_byte(cmd, (MPU_ADDR << 1) | I2C_MASTER_WRITE, 1);
-	if(error != ESP_OK)
-		return 1;
-
-	error = i2c_master_write_byte(cmd, reg, 1);
-	if(error != ESP_OK)
-		return 1;
-
-	i2c_master_start(cmd);
-	error = i2c_master_write_byte(cmd, (MPU_ADDR << 1) | I2C_MASTER_READ, 1);
-	if(error != ESP_OK)
-		return 1;
-
-	error = i2c_master_read(cmd, buf, len, I2C_MASTER_LAST_NACK);
-	if(error != ESP_OK)
-		return 1;
-
-	i2c_master_stop(cmd);
-
-	i2c_master_cmd_begin(I2C_NUM_0, cmd, 10/portTICK_PERIOD_MS);
-
-	i2c_cmd_link_delete(cmd);
-	return 0;
+        //单位化   
+        ax = ax / norm;                   
+        ay = ay / norm;
+        az = az / norm;      
+ 
+        // 估计方向的重力
+        vx = 2*(q1*q3 - q0*q2);
+        vy = 2*(q0*q1 + q2*q3);
+        vz = q0*q0 - q1*q1 - q2*q2 + q3*q3;
+ 
+        // 错误的领域和方向传感器测量参考方向之间的交叉乘积的总和
+        ex = (ay*vz - az*vy);
+        ey = (az*vx - ax*vz);
+        ez = (ax*vy - ay*vx);
+ 
+        // 积分误差比例积分增益
+        exInt = exInt + ex*Ki;
+        eyInt = eyInt + ey*Ki;
+        ezInt = ezInt + ez*Ki;
+ 
+        // 调整后的陀螺仪测量
+        gx = gx + Kp*ex + exInt;
+        gy = gy + Kp*ey + eyInt;
+        gz = gz + Kp*ez + ezInt;
+ 
+        // 整合四元数率和正常化
+        q0 = q0 + (-q1*gx - q2*gy - q3*gz)*halfT;
+        q1 = q1 + (q0*gx + q2*gz - q3*gy)*halfT;
+        q2 = q2 + (q0*gy - q1*gz + q3*gx)*halfT;
+        q3 = q3 + (q0*gz + q1*gy - q2*gx)*halfT;  
+ 
+        // 正常化四元
+        norm = sqrt(q0*q0 + q1*q1 + q2*q2 + q3*q3);
+        q0 = q0 / norm;
+        q1 = q1 / norm;
+        q2 = q2 / norm;
+        q3 = q3 / norm;
+ 
+        Pitch  = asin(-2 * q1 * q3 + 2 * q0* q2)* 57.3; // pitch ,转换为度数
+        Roll = atan2(2 * q2 * q3 + 2 * q0 * q1, -2 * q1 * q1 - 2 * q2* q2 + 1)* 57.3; // rollv
+        Yaw = atan2(2*(q1*q2 + q0*q3),q0*q0+q1*q1-q2*q2-q3*q3) * 57.3;                // yaw
 }

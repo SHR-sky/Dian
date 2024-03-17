@@ -2,6 +2,7 @@
 #define __MYIIC_H
 
 #include "driver/i2c.h"
+#include "driver/i2c_master.h"
 #include "esp_log.h"
 #include "esp_system.h"
 #include "freertos/FreeRTOS.h"

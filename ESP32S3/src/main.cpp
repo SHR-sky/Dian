@@ -171,9 +171,6 @@ TFT_eSPI tft = TFT_eSPI(); // Invoke custom library
 
 
 
-
-
-
 //------------------------------------------------------------------------------------------
 
 // Code to run a screen calibration, not needed when calibration values set in setup()
@@ -514,8 +511,8 @@ void loop()
 
 */
 
-
 /*
+
 //WIFI传输数据
 
 #include <WiFi.h>
@@ -532,6 +529,8 @@ void setup()
 {
     Serial.begin(115200);
     Serial.println();
+
+    pinMode(13,OUTPUT);
 
     WiFi.mode(WIFI_STA);
     WiFi.setSleep(false);
@@ -562,6 +561,14 @@ void loop()
                 String line = client.readStringUntil('\n');
                 Serial.print("I get it!");
                 Serial.println(line); //测试能否将数据回传到ESP，并且利用ESP进行处理
+                if(line == "LED_ON") //测试能否接收指令
+                {
+                    digitalWrite(13,HIGH);
+                }
+                if(line == "LED_OFF")
+                {
+                    digitalWrite(13,LOW);
+                }
             }
         }
         Serial.println("Bye bye!");
@@ -577,9 +584,9 @@ void loop()
 
 */
 
-
-
 /*
+
+
 //加速度，欧拉角以及速度计算
 
 #include "I2Cdev.h"
@@ -812,11 +819,15 @@ void loop()
         z_v = aaWorld.z + z_v;
 
 
+        int v =  sqrt(x_v*x_v+y_v*y_v+z_v*z_v);
+
+
         //闪灯指示运行
         blinkState = !blinkState;
         digitalWrite(LED_PIN, blinkState);
     }
 }
+
 
 */
 
@@ -826,7 +837,7 @@ void loop()
 
 
 //姿态数据
-
+//屏幕显示
 
 #include <Arduino.h>
 #include "I2Cdev.h"
