@@ -12,9 +12,18 @@
 // SCREEN: ui_Screen1
 void ui_Screen1_screen_init(void);
 lv_obj_t * ui_Screen1;
-void ui_event_Switch1(lv_event_t * e);
-lv_obj_t * ui_Switch1;
+lv_obj_t * ui_Image4;
 lv_obj_t * ui_Label1;
+lv_obj_t * ui_Label2;
+lv_obj_t * ui_Label3;
+lv_obj_t * ui_Label4;
+lv_obj_t * ui_Label5;
+lv_obj_t * ui_Label6;
+
+
+// SCREEN: ui_Screen2
+void ui_Screen2_screen_init(void);
+lv_obj_t * ui_Screen2;
 lv_obj_t * ui____initial_actions0;
 
 ///////////////////// TEST LVGL SETTINGS ////////////////////
@@ -28,14 +37,6 @@ lv_obj_t * ui____initial_actions0;
 ///////////////////// ANIMATIONS ////////////////////
 
 ///////////////////// FUNCTIONS ////////////////////
-void ui_event_Switch1(lv_event_t * e)
-{
-    lv_event_code_t event_code = lv_event_get_code(e);
-    lv_obj_t * target = lv_event_get_target(e);
-    if(event_code == LV_EVENT_CLICKED) {
-        _ui_checked_set_text_value(ui_Label1, target, "hello world", "bye!");
-    }
-}
 
 ///////////////////// SCREENS ////////////////////
 
@@ -46,6 +47,7 @@ void ui_init(void)
                                                false, LV_FONT_DEFAULT);
     lv_disp_set_theme(dispp, theme);
     ui_Screen1_screen_init();
+    ui_Screen2_screen_init();
     ui____initial_actions0 = lv_obj_create(NULL);
     lv_disp_load_scr(ui_Screen1);
 }

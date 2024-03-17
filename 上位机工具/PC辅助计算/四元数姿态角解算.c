@@ -72,11 +72,12 @@ int main()
 {
     int a[6];
     int cnt = 0;
-    FILE* fp = NULL;
-    fp = fopen("F:\\Dian\\上位机工具\\mpu6050_data.csv", "at+");
+    FILE* fp=fopen("..//mpu6050_data.csv", "r");
+    // fp = fopen("F:/Dian/上位机工具/mpu6050_data.csv", "r");
+    printf("%p",fp);
     if (fp != NULL)
-	    printf("打开文件成功！！\n");
-    else printf("失败！！\n");
+	    printf("11111111111\n");
+    else printf("222222222222\n");
     char* line,* p;//字符指针
     char buffer[60],s[60];//存储所有字符
     const char* delim = ",";
