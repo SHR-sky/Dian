@@ -1,5 +1,12 @@
 #define ESP32_WiFi 0
 
+/*
+//控制模式
+    0用于WiFi传输数据，注意热点查看IP
+    1用于网页显示，注意网页内嵌图像为echart，需要开启本地服务器
+*/
+
+
 #if ESP32_WiFi
 
 //ESP32数据网页
@@ -13,9 +20,6 @@
 #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
     #include "Wire.h"
 #endif
-
-
- 
 
 MPU6050 accelgyro;
  
@@ -177,8 +181,6 @@ void loop()
 }
 
 
-
-
 #else
 
 
@@ -186,7 +188,25 @@ void loop()
 //WIFI传输数据
 
 #include <WiFi.h>
+#include <Arduino.h>
+#include "I2Cdev.h"
+#include "MPU6050.h"
 
+#if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
+    #include "Wire.h"
+#endif
+
+MPU6050 accelgyro;
+ 
+//三轴的旋转角度及三轴加速度
+int16_t ax, ay, az;
+int16_t gx, gy, gz;
+ 
+//13脚为指示灯
+#define LED_PIN 13
+bool blinkState = false;
+
+//热点名称与密码
 const char *ssid = "荣耀Magic4 Pro";
 const char *password = "123321123";
 
@@ -197,10 +217,28 @@ WiFiClient client;
 
 void setup()
 {
+
+    //初始化I2C，采用软件I2C
+    #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
+        Wire.begin(6,7,10000);
+    #endif
+    
+    //打开串口，传输数据
     Serial.begin(115200);
+
+    Serial.println("Initializing I2C devices..."); 
+    //初始化MPU6050
+    accelgyro.initialize();
+ 
+    Serial.println("Testing device connections...");
+    Serial.println(accelgyro.testConnection() ? "MPU6050 connection is successful" : "MPU6050 connection is failed");
+
+    //指示灯配置
+    pinMode(LED_PIN, OUTPUT);
+
     Serial.println();
 
-    pinMode(13,OUTPUT);
+    pinMode(LED_PIN,OUTPUT);
 
     WiFi.mode(WIFI_STA);
     WiFi.setSleep(false);
@@ -238,6 +276,12 @@ void loop()
                 if(line == "LED_OFF")
                 {
                     digitalWrite(13,LOW);
+                }
+                if(line == "Data")
+                {
+                    accelgyro.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
+                    client.printf("ax:%d,ay:%d,az:%d\n",ax,ay,az);
+                    client.printf("gx:%d,gy:%d,gz:%d\n",gx,gy,gz);
                 }
             }
         }
