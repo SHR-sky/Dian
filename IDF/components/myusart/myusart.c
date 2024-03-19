@@ -21,7 +21,7 @@ void myusart_init(void)
 
 
 
-void myusart_test()
+void myusart_test(void)
 {
     char* test_str = "Hello world\r\n";
     while (1)
@@ -29,4 +29,9 @@ void myusart_test()
         uart_write_bytes(uart_num, (const char*)test_str, strlen(test_str));
         vTaskDelay(1000);
     }
+}
+
+void myusart_print(char *rev)
+{
+    uart_write_bytes(uart_num, (const char*)rev, strlen(rev));
 }

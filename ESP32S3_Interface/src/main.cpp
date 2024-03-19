@@ -1,7 +1,7 @@
-#define ESP_32_In 3
+#define ESP_32_In 2
 /*
 //控制模式
-    0显示欧拉角
+    0显示欧拉角，加速度，速度
     1显示原始六轴数据
     2串口打印"hello world"
     3点灯
@@ -214,6 +214,16 @@ void loop()
         Serial.print(aaWorld.y);
         Serial.print("\t");
         Serial.println(aaWorld.z);
+
+        x_v = aaWorld.x + x_v;
+        y_v = aaWorld.y + y_v;
+        z_v = aaWorld.z + z_v;
+        int v =  sqrt(x_v*x_v+y_v*y_v+z_v*z_v);
+
+        Serial.printf("v:%d\n",v);
+        
+
+
 #endif
  
 #ifdef OUTPUT_TEAPOT
@@ -230,10 +240,7 @@ void loop()
         teapotPacket[11]++; // packetCount, loops at 0xFF on purpose
 #endif
 
-        // x_v = aaWorld.x + x_v;
-        // y_v = aaWorld.y + y_v;
-        // z_v = aaWorld.z + z_v;
-        // int v =  sqrt(x_v*x_v+y_v*y_v+z_v*z_v);
+        
 
         //闪灯指示运行
         blinkState = !blinkState;

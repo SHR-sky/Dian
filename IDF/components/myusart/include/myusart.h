@@ -17,6 +17,11 @@ const uart_port_t uart_num = UART_NUM_0;
 #define RXD_PIN 44
 
 
+void myusart_init(void);
+void myusart_test(void);
+void myusart_print(char *rev);
+
+
 #endif
 
 

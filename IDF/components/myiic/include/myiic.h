@@ -41,12 +41,6 @@
 
 static const char *TAG = "MPU6050";
 
-
-
-
-
-
-
 #define MPU_SELF_TESTX_REG		0X0D	//自检寄存器X
 #define MPU_SELF_TESTY_REG		0X0E	//自检寄存器Y
 #define MPU_SELF_TESTZ_REG		0X0F	//自检寄存器Z
@@ -115,7 +109,11 @@ static const char *TAG = "MPU6050";
 #define MPU_DEVICE_ID_REG		0X75	//器件ID寄存器
 
 
-
+i2c_config_t myiic_Init(void);
+void mpu6050_get_six(int16_t *gx, int16_t *gy, int16_t *gz, int16_t *ax, int16_t *ay, int16_t *az);
+void mpu6050_get_data(void);
+void change_unit(int16_t *gx, int16_t *gy, int16_t *gz, int16_t *ax, int16_t *ay, int16_t *az, float uint[]);
+void IMUupdate(float gx, float gy, float gz, float ax, float ay, float az);
 
 
 

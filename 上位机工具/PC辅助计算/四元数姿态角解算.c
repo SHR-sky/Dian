@@ -4,7 +4,7 @@
 #include<string.h>
 
 // 变量定义
- 
+#define g 9.796
 #define Kp 100.0f                // 比例增益支配率收敛到加速度计/磁强计
 #define Ki 0.002f                // 积分增益支配率的陀螺仪偏见的衔接
 #define halfT 0.001f             // 采样周期的一半
@@ -100,4 +100,34 @@ int main()
             IMUupdate(a[0],a[1],a[2],a[3],a[4],a[5]);
         }
     }
+}
+
+
+//单位换算，给显示用
+
+void change_unit(int16_t *gx, int16_t *gy, int16_t *gz, int16_t *ax, int16_t *ay, int16_t *az, float uint[])
+{
+    float temp_gx,temp_gy,temp_gz,temp_ax,temp_ay,temp_az;
+    temp_ax = (float) *ax;
+    temp_ay = (float) *ay;
+    temp_az = (float) *az;
+    temp_gx = (float) *gx;
+    temp_gy = (float) *gy;
+    temp_gz = (float) *gz;
+
+    temp_ax = temp_ax / 2048 * g;
+    temp_ay = temp_ay / 2048 * g;
+    temp_az = temp_az / 2048 * g;
+
+    temp_gx = temp_gx / 16.4;
+    temp_gy = temp_gy / 16.4;
+    temp_gz = temp_gz / 16.4;
+
+    uint[0] = temp_gx;
+    uint[1] = temp_gy;
+    uint[3] = temp_gz;
+    uint[4] = temp_ax;
+    uint[5] = temp_ay;
+    uint[6] = temp_az;
+
 }

@@ -2,6 +2,8 @@
 #include <string.h>
 #include "myiic.h"
 
+#define g 9.794 //武汉重力加速度
+#define N_data 6
 
 #define Kp 100.0f                // 比例增益支配率收敛到加速度计/磁强计
 #define Ki 0.002f                // 积分增益支配率的陀螺仪偏见的衔接
@@ -10,7 +12,7 @@
 float q0 = 1, q1 = 0, q2 = 0, q3 = 0;          // 四元数的元素，代表估计方向
 float exInt = 0, eyInt = 0, ezInt = 0;         // 按比例缩小积分误差
  
-float Yaw,Pitch,Roll;  //偏航角，俯仰角，翻滚角
+extern float Yaw,Pitch,Roll;  //偏航角，俯仰角，翻滚角
 
 
 i2c_config_t myiic_Init(void)
@@ -31,6 +33,33 @@ i2c_config_t myiic_Init(void)
 
     return config;
 
+}
+
+
+void mpu6050_get_six(int16_t *gx, int16_t *gy, int16_t *gz, int16_t *ax, int16_t *ay, int16_t *az) 
+{
+    i2c_config_t esp32 = myiic_Init();
+
+    uint8_t data[14];
+
+    i2c_cmd_handle_t cmd = i2c_cmd_link_create();	//创建一个命令链表
+    i2c_master_start(cmd);
+    i2c_master_write_byte(cmd, (MPU_ADDR << 1) | I2C_MASTER_WRITE, true); //选择通信对象
+    i2c_master_write_byte(cmd, 0x3B, true);	//读取位置
+    i2c_master_start(cmd);
+    i2c_master_write_byte(cmd, (MPU_ADDR << 1) | I2C_MASTER_READ, true);	//读操作
+    i2c_master_read(cmd, data, 14, I2C_MASTER_LAST_NACK);	//读14个byte
+    i2c_master_stop(cmd);
+    i2c_master_cmd_begin(I2C_NUM_0, cmd, 1000 / portTICK_PERIOD_MS);
+    i2c_cmd_link_delete(cmd); //free cmd
+
+    // 解析数据并输出(去掉温度部分)
+    *ax = (data[0] << 8) | data[1];
+    *ay = (data[2] << 8) | data[3];
+    *az = (data[4] << 8) | data[5];
+	*gx = (data[8] << 8) | data[9];
+	*gy = (data[10] << 8) | data[11];
+	*gz = (data[12] << 8) | data[13];
 }
 
 
@@ -63,7 +92,41 @@ void mpu6050_get_data(void) {
 
 }
 
+/*
+    由于FS_SEL默认为3，陀螺仪量程为-2000到2000，而16位有符号二进制可表示数字-32767到32767，并且为线性对应
+    -32767对应-2000度每秒的陀螺仪角速度，32767对应2000度每秒的陀螺仪角速度。把32767除以2000，就可以得到16.40 
+    即为灵敏度，也就是16.40个单位对应1度每秒
+    同理，当AFS_SEL=3时，数字-32767对应-16g，32767对应16g。
+    把32767除以16，就可以得到2048，即灵敏度。
+    把从加速度计读出的数字除以2048，就可以换算成加速度的数值（以g为单位）
+*/
 
+void change_unit(int16_t *gx, int16_t *gy, int16_t *gz, int16_t *ax, int16_t *ay, int16_t *az, float uint[])
+{
+    float temp_gx,temp_gy,temp_gz,temp_ax,temp_ay,temp_az;
+    temp_ax = (float) *ax;
+    temp_ay = (float) *ay;
+    temp_az = (float) *az;
+    temp_gx = (float) *gx;
+    temp_gy = (float) *gy;
+    temp_gz = (float) *gz;
+
+    temp_ax = temp_ax / 2048 * g;
+    temp_ay = temp_ay / 2048 * g;
+    temp_az = temp_az / 2048 * g;
+
+    temp_gx = temp_gx / 16.4;
+    temp_gy = temp_gy / 16.4;
+    temp_gz = temp_gz / 16.4;
+
+    uint[0] = temp_gx;
+    uint[1] = temp_gy;
+    uint[3] = temp_gz;
+    uint[4] = temp_ax;
+    uint[5] = temp_ay;
+    uint[6] = temp_az;
+
+}
 
 
 
