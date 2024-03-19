@@ -8,8 +8,9 @@
                 "${config:idf.espIdfPath}/components/**",
                 "${config:idf.espIdfPathWin}/components/**",
                 "${config:idf.espAdfPath}/components/**",
-                "${config:idf.espAdfPathWin}/components/**",
-                "${workspaceFolder}/**"
+                "${config:idf.espAdfPathWin}/components/*",
+                "${workspaceFolder}/**",
+                "C:/Users/sky/esp/v5.2.1/esp-idf/components/*"
             ],
             "browse": {
                 "path": [

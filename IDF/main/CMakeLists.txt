@@ -5,4 +5,5 @@ set(COMPONENT_REQUIRES
     LED
     myusart
     myiic
+    WiFi
     )

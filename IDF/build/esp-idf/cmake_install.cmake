@@ -429,6 +429,11 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
+  include("F:/Dian/IDF/build/esp-idf/WiFi/cmake_install.cmake")
+endif()
+
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
   include("F:/Dian/IDF/build/esp-idf/myiic/cmake_install.cmake")
 endif()
 

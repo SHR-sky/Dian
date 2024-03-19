@@ -65,5 +65,6 @@ F:/Dian/IDF/build/esp-idf/usb/libusb.a
 F:/Dian/IDF/build/esp-idf/wifi_provisioning/libwifi_provisioning.a
 F:/Dian/IDF/build/esp-idf/main/libmain.a
 F:/Dian/IDF/build/esp-idf/LED/libLED.a
+F:/Dian/IDF/build/esp-idf/WiFi/libWiFi.a
 F:/Dian/IDF/build/esp-idf/myiic/libmyiic.a
 F:/Dian/IDF/build/esp-idf/myusart/libmyusart.a

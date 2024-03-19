@@ -653,6 +653,13 @@ F:/Dian/IDF/build/esp-idf/LED/CMakeFiles/list_install_components.dir
 F:/Dian/IDF/build/esp-idf/LED/CMakeFiles/install.dir
 F:/Dian/IDF/build/esp-idf/LED/CMakeFiles/install/local.dir
 F:/Dian/IDF/build/esp-idf/LED/CMakeFiles/install/strip.dir
+F:/Dian/IDF/build/esp-idf/WiFi/CMakeFiles/__idf_WiFi.dir
+F:/Dian/IDF/build/esp-idf/WiFi/CMakeFiles/edit_cache.dir
+F:/Dian/IDF/build/esp-idf/WiFi/CMakeFiles/rebuild_cache.dir
+F:/Dian/IDF/build/esp-idf/WiFi/CMakeFiles/list_install_components.dir
+F:/Dian/IDF/build/esp-idf/WiFi/CMakeFiles/install.dir
+F:/Dian/IDF/build/esp-idf/WiFi/CMakeFiles/install/local.dir
+F:/Dian/IDF/build/esp-idf/WiFi/CMakeFiles/install/strip.dir
 F:/Dian/IDF/build/esp-idf/myiic/CMakeFiles/__idf_myiic.dir
 F:/Dian/IDF/build/esp-idf/myiic/CMakeFiles/edit_cache.dir
 F:/Dian/IDF/build/esp-idf/myiic/CMakeFiles/rebuild_cache.dir
