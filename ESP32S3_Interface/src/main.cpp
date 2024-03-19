@@ -1,4 +1,4 @@
-#define ESP_32_In 2
+#define ESP_32_In 0
 /*
 //控制模式
     0显示欧拉角，加速度，速度
@@ -93,7 +93,7 @@ void setup()
     mpu.setXGyroOffset(220);
     mpu.setYGyroOffset(76);
     mpu.setZGyroOffset(-85);
-    mpu.setZAccelOffset(1788);
+    mpu.setZAccelOffset(1714);  //根据2万组数据取平均，此处由1788 - 57 -17 =1731
     Serial.printf("devStatus=%d\n", devStatus);
 
     if (devStatus == 0) //正常工作
@@ -220,7 +220,7 @@ void loop()
         z_v = aaWorld.z + z_v;
         int v =  sqrt(x_v*x_v+y_v*y_v+z_v*z_v);
 
-        Serial.printf("v:%d\n",v);
+        //Serial.printf("v:%d\n",v);
         
 
 
@@ -313,29 +313,29 @@ void loop() {
 
     #ifdef OUTPUT_READABLE_ACCELGYRO
 
-        tft.setCursor(0,10);
-        tft.printf("ax");
-        tft.println(ax);
-        tft.printf("ay");
-        tft.println(ay);
-        tft.printf("az");
-        tft.println(az);
-        tft.printf("gx");
-        tft.println(gx);
-        tft.printf("gy");
-        tft.println(gy);
-        tft.printf("gz");
-        tft.println(gz);
-        delay(1000);
-        tft.fillScreen(TFT_BLACK);
+        // tft.setCursor(0,10);
+        // tft.printf("ax");
+        // tft.println(ax);
+        // tft.printf("ay");
+        // tft.println(ay);
+        // tft.printf("az");
+        // tft.println(az);
+        // tft.printf("gx");
+        // tft.println(gx);
+        // tft.printf("gy");
+        // tft.println(gy);
+        // tft.printf("gz");
+        // tft.println(gz);
+        // delay(1000);
+        // tft.fillScreen(TFT_BLACK);
 
-        // Serial.print("a/g:\t");
-        // Serial.print(ax); Serial.print("\t");
-        // Serial.print(ay); Serial.print("\t");
-        // Serial.print(az); Serial.print("\t");
-        // Serial.print(gx); Serial.print("\t");
-        // Serial.print(gy); Serial.print("\t");
-        // Serial.println(gz);
+        Serial.print("a/g:\t");
+        Serial.print(ax); Serial.print("\t");
+        Serial.print(ay); Serial.print("\t");
+        Serial.print(az); Serial.print("\t");
+        Serial.print(gx); Serial.print("\t");
+        Serial.print(gy); Serial.print("\t");
+        Serial.println(gz);
     #endif
 
     //灯闪烁，说明数据正常传输

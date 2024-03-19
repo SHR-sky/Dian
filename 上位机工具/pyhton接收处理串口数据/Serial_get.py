@@ -5,7 +5,7 @@ import csv
 ser = serial.Serial('COM13', 115200)  # 串口号和波特率
 
 # 创建 CSV 文件并写入数据
-with open('accelerometer_data.csv', mode='w', newline='') as file:
+with open('accelerometer_data_raw.csv', mode='w', newline='') as file:
     writer = csv.writer(file)
     writer.writerow(['Time', 'Acceleration_X', 'Acceleration_Y', 'Acceleration_Z'])  # 写入 CSV 文件的标题行
 
