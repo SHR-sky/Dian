@@ -1,8 +1,8 @@
-# Install script for directory: F:/Dian/IDF/components/led
+# Install script for directory: F:/Dian/IDF/components/LED
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "C:/Program Files (x86)/Dian")
+  set(CMAKE_INSTALL_PREFIX "C:/Program Files (x86)/IDF")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 

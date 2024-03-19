@@ -3,14 +3,11 @@
 
 #include "driver/i2c.h"
 #include "driver/i2c_master.h"
-#include "esp_log.h"
-#include "esp_system.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
 
 #define DATA_LENGTH          512  /*!<Data buffer length for test buffer*/
-
 
 #define I2C_SLAVE_NUM I2C_NUM_0    /*!<I2C port number for slave dev */
 #define I2C_SLAVE_TX_BUF_LEN  (2*DATA_LENGTH) /*!<I2C slave tx buffer size */

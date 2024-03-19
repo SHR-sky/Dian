@@ -1,17 +1,10 @@
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
-#include "led.h"
-#include "myusart.h"
-#include "myiic.h"
-#include "FreeRTOS/freertos.h"
-#include "FreeRTOS/task.h"
 
 
-#define IDF_mode 2
+#define IDF_mode 1
 
 float Yaw,Pitch,Roll;
-
 
 #if (IDF_mode == 0)
 

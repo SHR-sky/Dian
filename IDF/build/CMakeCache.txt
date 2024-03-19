@@ -15,10 +15,7 @@
 ########################
 
 //No help, variable specified on the command line.
-CCACHE_ENABLE:UNINITIALIZED=1
-
-//Path to a program.
-CCACHE_FOUND:FILEPATH=F:/ESP32/tools/ccache/4.8/ccache-4.8-windows-x86_64/ccache.exe
+CCACHE_ENABLE:UNINITIALIZED=0
 
 //Path to a program.
 CMAKE_ADDR2LINE:FILEPATH=F:/ESP32/tools/xtensa-esp-elf/esp-13.2.0_20230928/xtensa-esp-elf/bin/xtensa-esp32s3-elf-addr2line.exe
@@ -160,7 +157,7 @@ CMAKE_INSTALL_MANDIR:PATH=
 CMAKE_INSTALL_OLDINCLUDEDIR:PATH=/usr/include
 
 //Install path prefix, prepended onto install directories.
-CMAKE_INSTALL_PREFIX:PATH=C:/Program Files (x86)/Dian
+CMAKE_INSTALL_PREFIX:PATH=C:/Program Files (x86)/IDF
 
 //Run-time variable data (LOCALSTATEDIR/run)
 CMAKE_INSTALL_RUNSTATEDIR:PATH=
@@ -216,7 +213,7 @@ CMAKE_PROJECT_DESCRIPTION:STATIC=
 CMAKE_PROJECT_HOMEPAGE_URL:STATIC=
 
 //Value Computed by CMake
-CMAKE_PROJECT_NAME:STATIC=Dian
+CMAKE_PROJECT_NAME:STATIC=IDF
 
 //Path to a program.
 CMAKE_RANLIB:FILEPATH=F:/ESP32/tools/xtensa-esp-elf/esp-13.2.0_20230928/xtensa-esp-elf/bin/xtensa-esp32s3-elf-ranlib.exe
@@ -286,15 +283,6 @@ CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 //Disable package configuration, target export and installation
 DISABLE_PACKAGE_CONFIG_AND_INSTALL:BOOL=ON
 
-//Value Computed by CMake
-Dian_BINARY_DIR:STATIC=F:/Dian/IDF/build
-
-//Value Computed by CMake
-Dian_IS_TOP_LEVEL:STATIC=ON
-
-//Value Computed by CMake
-Dian_SOURCE_DIR:STATIC=F:/Dian/IDF
-
 //Build Mbed TLS programs.
 ENABLE_PROGRAMS:BOOL=
 
@@ -309,6 +297,15 @@ GEN_FILES:BOOL=
 
 //Git command line client
 GIT_EXECUTABLE:FILEPATH=F:/git/Git/cmd/git.exe
+
+//Value Computed by CMake
+IDF_BINARY_DIR:STATIC=F:/Dian/IDF/build
+
+//Value Computed by CMake
+IDF_IS_TOP_LEVEL:STATIC=ON
+
+//Value Computed by CMake
+IDF_SOURCE_DIR:STATIC=F:/Dian/IDF
 
 //IDF Build Target
 IDF_TARGET:STRING=esp32s3
@@ -588,7 +585,7 @@ HAVE_TIME_T_SIZE:INTERNAL=TRUE
 //CHECK_TYPE_SIZE: sizeof(time_t)
 TIME_T_SIZE:INTERNAL=8
 //CMAKE_INSTALL_PREFIX during last run
-_GNUInstallDirs_LAST_CMAKE_INSTALL_PREFIX:INTERNAL=C:/Program Files (x86)/Dian
+_GNUInstallDirs_LAST_CMAKE_INSTALL_PREFIX:INTERNAL=C:/Program Files (x86)/IDF
 _Python3_EXECUTABLE:INTERNAL=f:/ESP32/python_env/idf5.2_py3.11_env/Scripts/python.exe
 //Python3 Properties
 _Python3_INTERPRETER_PROPERTIES:INTERNAL=Python;3;11;2;32;;;f:\ESP32\tools\idf-python\3.11.2\Lib;f:\ESP32\tools\idf-python\3.11.2\Lib;f:\ESP32\python_env\idf5.2_py3.11_env\Lib\site-packages;f:\ESP32\python_env\idf5.2_py3.11_env\Lib\site-packages

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "myiic.h"
+#include <math.h>
 
 #define g 9.794 //武汉重力加速度
 #define N_data 6
